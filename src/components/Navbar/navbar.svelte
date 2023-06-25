@@ -13,7 +13,7 @@
 	</svelte:fragment>
 	<AppRailAnchor selected={$page.url.pathname === '/base64'} href="/base64">Base64</AppRailAnchor>
 	<svelte:fragment slot="trail">
-		<AppRailAnchor>
+		<AppRailAnchor hover="">
 			<svelte:fragment slot="lead"><LightSwitch /></svelte:fragment>
 		</AppRailAnchor>
 	</svelte:fragment>
