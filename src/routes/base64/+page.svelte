@@ -1,12 +1,17 @@
 <script lang="ts">
-	import { clipboard } from '@skeletonlabs/skeleton';
-	import IconCopy from '~icons/bx/copy';
+	import { Toast } from '@skeletonlabs/skeleton';
 	import { atob, btoa } from 'abab';
+	import CopyableTextbox from '../../components/CopyableTextbox/CopyableTextbox.svelte';
+
 	let encoded = '';
 	let decoded = '';
+	let encodedErroring = false;
+	let decodedErroring = false;
 
 	function onDecodedChange(event: Event & { currentTarget: EventTarget & HTMLTextAreaElement }) {
 		const input = event.currentTarget.value;
+		encodedErroring = false;
+		decodedErroring = false;
 
 		if (!input) {
 			encoded = '';
@@ -16,10 +21,16 @@
 
 		decoded = input;
 		encoded = btoa(input) || 'Invalid input';
+
+		if (btoa(input) === null) {
+			decodedErroring = true;
+		}
 	}
 
 	function onEncodedChange(event: Event & { currentTarget: EventTarget & HTMLTextAreaElement }) {
 		const input = event.currentTarget.value;
+		encodedErroring = false;
+		decodedErroring = false;
 
 		if (!input) {
 			encoded = '';
@@ -29,38 +40,25 @@
 
 		encoded = input;
 		decoded = atob(input) || 'Invalid input';
+
+		if (atob(input) === null) {
+			encodedErroring = true;
+		}
 	}
 </script>
 
 <div class="grid grid-cols-2 h-full gap-8 p-8 items-center">
-	<label class="flex flex-col gap-2 h-full">
-		<div class="flex justify-between">
-			<span class="text-lg">Base64 Decoded </span>
-			<button type="button" class="btn-icon btn-icon-sm variant-filled" use:clipboard={decoded}
-				><IconCopy /></button
-			>
-		</div>
-
-		<textarea
-			class="textarea h-full resize-none"
-			placeholder="Decoded value"
-			value={decoded}
-			on:input={onDecodedChange}
-		/>
-	</label>
-
-	<label class="flex flex-col gap-2 h-full">
-		<div class="flex justify-between">
-			<span class="text-lg">Base64 Encoded </span>
-			<button type="button" class="btn-icon btn-icon-sm variant-filled" use:clipboard={encoded}
-				><IconCopy /></button
-			>
-		</div>
-		<textarea
-			class="textarea h-full resize-none"
-			placeholder="Encoded value"
-			value={encoded}
-			on:input={onEncodedChange}
-		/>
-	</label>
+	<CopyableTextbox
+		title={'Base64 Decoded'}
+		value={decoded}
+		erroring={decodedErroring}
+		onChange={onDecodedChange}
+	/>
+	<CopyableTextbox
+		title={'Base64 Encoded'}
+		value={encoded}
+		erroring={encodedErroring}
+		onChange={onEncodedChange}
+	/>
+	<Toast />
 </div>
